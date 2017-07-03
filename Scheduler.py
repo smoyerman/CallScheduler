@@ -48,30 +48,3 @@ s.placeSeniors()
 
 s.printCallSchedule()
 
-"""import numpy as np
-import pandas as pd
-
-# This wil be configured based on some web UI or excel doc or both
-noRes = 19
-services = [Config.Service.GS_GOLD, Config.Service.TRAUMA, Config.Service.GS_BLUE, Config.Service.COLORECTAL, Config.Service.BREAST, Config.Service.GS_ORANGE,np.nan,Config.Service.HPB_TRANSPLANT,np.nan,Config.Service.TRAUMA,np.nan,Config.Service.GS_GOLD,Config.Service.GS_BLUE,Config.Service.HPB_TRANSPLANT,Config.Service.VASCULAR,Config.Service.COLORECTAL,Config.Service.GS_GOLD,Config.Service.GS_BLUE,Config.Service.GS_ORANGE]
-years = np.array([1,1,1,1,1,1,2,2,2,3,3,3,3,4,4,4,5,5,5])
-
-types = np.array([Config.Type.SENIOR]*noRes)
-types[years < 3] = Config.Type.JUNIOR
-
-d = {'Service' : pd.Series(services, index=range(noRes)),
-     'Year' : pd.Series(years, index=range(noRes)),
-     'NoDays' : pd.Series(np.zeros(noRes), index=range(noRes)),
-     'Type' : pd.Series(types, index=range(noRes))}
-
-df = pd.DataFrame(d)
-
-# How many seniors on Trauma
-TraumaSrs = df[(df['Type'] == Config.Type.SENIOR) & (df['Service'] == Config.Service.TRAUMA)]
-
-if len(TraumaSrs) == 1:
-    for i in arrDays[:,0]:
-        if i > 0:
-            callAssignments[i].append(TraumaSrs.index[0])
-            df[TraumaSrs]["NoDays"] += 1
-"""
