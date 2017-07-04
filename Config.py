@@ -2,6 +2,8 @@ from enum import Enum
 import numpy as np
 import calendar
 import random
+import jinja2
+import os
 
 # Services
 class Service(Enum):
@@ -36,6 +38,12 @@ class Resident():
             self.type = Type.SENIOR
 
 
+def render(tpl_path, context):
+    path, filename = os.path.split(tpl_path)
+    return jinja2.Environment(
+        loader=jinja2.FileSystemLoader(path or './')
+    ).get_template(filename).render(context)
+
 class Scheduler():
 
     def __init__(self, year, month):
@@ -44,9 +52,9 @@ class Scheduler():
         self.calendar = np.array(c.monthdayscalendar(2017,7))
         self.daysInMonth = np.max(self.calendar)
         self.callAssignments = dict()
-        for d in range(self.daysInMonth):
+        for d in range(1, self.daysInMonth+1):
             self.callAssignments[d] = []
-        self.hasSenior = np.zeros(self.daysInMonth)
+        self.hasSenior = np.zeros(self.daysInMonth+1)
 
     # Add a resident to the residents array in the Scheduler object
     def addResident(self, res):
@@ -103,7 +111,7 @@ class Scheduler():
     def printCallSchedule(self):
         for key, item in self.callAssignments.items():
             for res in item:
-                print(str(key) + ":\t" + str((res.resNo, res.service, res.year)))
+                print(str(key) + ":\t" + str((res.resNo, res.service.name, res.year)))
 
     # Function to place seniors in remaining days, giving preference to older
     def placeSeniors(self):
@@ -113,7 +121,7 @@ class Scheduler():
         daysPerSenior = noCallDaysRemaining / float(noSrsInPool)
         random.shuffle(self.Seniors)
         j = 0
-        for i in range(self.daysInMonth):
+        for i in range(1,self.daysInMonth+1):
             if not self.hasSenior[i]:
                 # assign next senior here
                 if self.CallCounts[self.Seniors[j]] <= daysPerSenior:
@@ -161,4 +169,23 @@ class Scheduler():
             if (sr in self.callAssignments[day-2]):
                 return False
         return True
-            
+
+    def returnResidents(self):
+        resSchedule = dict()
+        for key, item in self.callAssignments.items():
+            resSchedule[key] = [res.service.name + ": PGY" + str(res.year) for res in item]
+        return resSchedule
+
+    # Function to render readable call schedule
+    def renderCallSchedule(self):
+        templateLoader = jinja2.FileSystemLoader( searchpath="/" )
+        templateEnv = jinja2.Environment( loader=templateLoader )
+        TEMPLATE_FILE = "/Users/smoyerma/Documents/Call Scheduler/html/calendar.html"
+        template = templateEnv.get_template( TEMPLATE_FILE )
+        resSchedule = self.returnResidents()
+        templateVars = { "month" : self.calendar,
+                         "schedule" : resSchedule }
+        result = template.render( templateVars )
+        Html_file = open("html/output.html","w")
+        Html_file.write(result)
+        Html_file.close()

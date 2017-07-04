@@ -1,7 +1,6 @@
 import Config
 import numpy as np
 import os
-import jinja2
 
 # Hard-coded peeps for July right now - make a loader function for grabbing from excel or webbpage
 July = [
@@ -47,4 +46,4 @@ s.assignTraumaSeniors()
 s.placeSeniors()
 
 s.printCallSchedule()
-
+s.renderCallSchedule()
